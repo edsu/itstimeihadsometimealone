@@ -1,2 +1,3 @@
 Pipfile*
 .env
+*.csv

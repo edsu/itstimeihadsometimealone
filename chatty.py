@@ -4,6 +4,7 @@
 Looks at your home timeline and tells you who tweets the most on it
 """
 
+import csv
 import sys
 import time
 import dotenv
@@ -15,8 +16,8 @@ from collections import Counter
 
 dotenv.load_dotenv()
 
-auth = tweepy.OAuthHandler(e['CONSUMER_KEY'], e['CONSUMER_SECRET'])
-auth.set_access_token(e['ACCESS_TOKEN'], e['ACCESS_TOKEN_SECRET'])
+auth = tweepy.OAuthHandler(e["CONSUMER_KEY"], e["CONSUMER_SECRET"])
+auth.set_access_token(e["ACCESS_TOKEN"], e["ACCESS_TOKEN_SECRET"])
 twitter = tweepy.API(auth)
 
 tweets = Counter()
@@ -33,38 +34,51 @@ def check():
         user = status.user.screen_name
         users[user] += 1
 
-        if hasattr(status, 'retweeted_status'):
+        if hasattr(status, "retweeted_status"):
             retweets[user] += 1
-            sys.stdout.write('🔁')
+            sys.stdout.write("🔁 ")
         else:
             tweets[user] += 1
-            sys.stdout.write('🐦')
+            sys.stdout.write("🐦 ")
 
         sys.stdout.flush()
 
 print("")
-print("Following your home timeline (tweet (🐦) retweet (🔁)")
+print("Following your home timeline tweet (🐦) retweet (🔁)")
 print("Press CTRL-C to stop and output summary.\n")
+
+start = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
 
 while True:
     try:
         check()
         time.sleep(120)
     except tweepy.error.RateLimitError as e:
-        print('sleeping', e)
+        print("sleeping", e)
         time.sleep(15 * 60)
     except KeyboardInterrupt:
         break
 
-print("\nOriginal Tweets")
-for user, count in tweets.most_common():
-    print('{:30s} {:3n}'.format(user, count))
+end = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
+filename = "chatty-{}-{}.csv".format(start, end)
+cols = ["User", "Tweets", "Retweets", "Total"]
 
-print("\nRetweets")
-for user, count in retweets.most_common():
-    print('{:30s} {:3n}'.format(user, count))
+print("\n\n")
+print("| {:20s} | {:6s} | {:6s} | {:6s} |".format(*cols))
+print("| -------------------- | ------ | ------ | ------ |")
 
-print("\nTotal")
-for user, count in users.most_common():
-    print('{:30s} {:3n}'.format(user, count))
+with open(filename, "w") as fh:
+    out = csv.writer(fh)
+    out.writerow(["user", "retweets", "tweets", "total"])
+    for user, total in users.most_common():
+        row = [
+            user,
+            retweets.get(user, 0),
+            tweets.get(user, 0),
+            total
+        ]
+        print("| {:20s} | {:6n} | {:6n} | {:6n} |".format(*row))
+        out.writerow(row)
 
+print("\n")
+print("full results written to {}".format(filename))
