@@ -12,3 +12,8 @@ Create a `.env` file that looks like this:
 Then install the requirements:
 
     pip install -r requirements.txt
+
+Then run the script:
+
+    python chatty.py
+
