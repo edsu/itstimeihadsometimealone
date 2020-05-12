@@ -1,4 +1,4 @@
-# its-time-i-had-some-time-alone
+# itstimeihadsometimealone
 
 Some silly scripts to look at (and modify) your experience of Twitter.
 
