@@ -35,15 +35,15 @@ def check():
 
         if hasattr(status, 'retweeted_status'):
             retweets[user] += 1
-            sys.stdout.write('+')
+            sys.stdout.write('🔁')
         else:
             tweets[user] += 1
-            sys.stdout.write('.')
+            sys.stdout.write('🐦')
 
         sys.stdout.flush()
 
 print("")
-print("Following your home timeline (tweet (.) retweet (+)")
+print("Following your home timeline (tweet (🐦) retweet (🔁)")
 print("Press CTRL-C to stop and output summary.\n")
 
 while True:
