@@ -1,6 +1,6 @@
 # itstimeihadsometimealone
 
-Some silly scripts to look at (and modify) your experience of Twitter.
+Some scripts to look at (and modify) your experience of Twitter.
 
 Create a `.env` file that looks like this:
 
