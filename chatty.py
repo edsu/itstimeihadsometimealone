@@ -16,6 +16,7 @@ from collections import Counter
 tweets = Counter()
 users = Counter()
 retweets = Counter()
+quotes = Counter()
 seen = set()
 
 def count(status):
@@ -26,7 +27,10 @@ def count(status):
     user = status.user.screen_name
     users[user] += 1
 
-    if hasattr(status, "retweeted_status"):
+    if hasattr(status, "quoted_status"): 
+        quotes[user] += 1
+        sys.stdout.write("💬 ")
+    elif hasattr(status, "retweeted_status"):
         retweets[user] += 1
         sys.stdout.write("🔁 ")
     else:
@@ -40,7 +44,7 @@ def check():
         count(status)
 
 print("")
-print("Following your home timeline tweet (🐦) retweet (🔁)")
+print("Following your home timeline tweet (🐦) quote (💬) retweet (🔁)")
 print("Press CTRL-C to stop and output summary.\n")
 
 start = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
@@ -63,23 +67,24 @@ while True:
 
 end = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
 filename = "chatty-{}-{}.csv".format(start, end)
-cols = ["User", "Tweets", "Retweets", "Total"]
+cols = ["User", "Quotes", "Tweets", "Retweets", "Total"]
 
 print("\n\n")
-print("| {:20s} | {:6s} | {:6s} | {:6s} |".format(*cols))
-print("| -------------------- | ------ | ------ | ------ |")
+print("| {:20s} | {:6s} | {:6s} | {:6s} | {:6s} |".format(*cols))
+print("| -------------------- | ------ | ------ | ------ | ------ |")
 
 with open(filename, "w") as fh:
     out = csv.writer(fh)
-    out.writerow(["user", "retweets", "tweets", "total"])
+    out.writerow(["user", "quotes", "retweets", "tweets", "total"])
     for user, total in users.most_common():
         row = [
             user,
+            quotes.get(user, 0),
             retweets.get(user, 0),
             tweets.get(user, 0),
             total
         ]
-        print("| {:20s} | {:6n} | {:6n} | {:6n} |".format(*row))
+        print("| {:20s} | {:6n} | {:6n} | {:6n} | {:6n} |".format(*row))
         out.writerow(row)
 
 print("\n")
