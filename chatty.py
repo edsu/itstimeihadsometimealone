@@ -7,6 +7,7 @@ Looks at your home timeline and tells you who tweets the most on it
 import csv
 import sys
 import time
+import tweepy
 import datetime
 
 from utils import twitter
@@ -44,17 +45,17 @@ print("Press CTRL-C to stop and output summary.\n")
 
 start = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
 
-for status in twitter.Cursor(twitter.home_timeline, count=200).items(800):
+for status in tweepy.Cursor(twitter.home_timeline, count=200).items(800):
     count(status)
 
 while True:
     try:
         time.sleep(120)
         check()
-    except twitter.error.RateLimitError as e:
+    except tweepy.error.RateLimitError as e:
         print("sleeping", e)
         time.sleep(15 * 60)
-    except twitter.error.TweepError as e:
+    except tweepy.error.TweepError as e:
         print("caught Twitter API error sleeping")
         time.sleep(60)
     except KeyboardInterrupt:
