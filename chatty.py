@@ -18,23 +18,26 @@ users = Counter()
 retweets = Counter()
 seen = set()
 
+def count(status):
+    if status.id in seen:
+        return
+
+    seen.add(status.id)
+    user = status.user.screen_name
+    users[user] += 1
+
+    if hasattr(status, "retweeted_status"):
+        retweets[user] += 1
+        sys.stdout.write("🔁 ")
+    else:
+        tweets[user] += 1
+        sys.stdout.write("🐦 ")
+
+    sys.stdout.flush()
+
 def check():
     for status in twitter.home_timeline(count=200):
-        if status.id in seen:
-            continue
-
-        seen.add(status.id)
-        user = status.user.screen_name
-        users[user] += 1
-
-        if hasattr(status, "retweeted_status"):
-            retweets[user] += 1
-            sys.stdout.write("🔁 ")
-        else:
-            tweets[user] += 1
-            sys.stdout.write("🐦 ")
-
-        sys.stdout.flush()
+        count(status)
 
 print("")
 print("Following your home timeline tweet (🐦) retweet (🔁)")
@@ -42,10 +45,13 @@ print("Press CTRL-C to stop and output summary.\n")
 
 start = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
 
+for status in tweepy.Cursor(twitter.home_timeline, count=200).items(800):
+    count(status)
+
 while True:
     try:
-        check()
         time.sleep(120)
+        check()
     except tweepy.error.RateLimitError as e:
         print("sleeping", e)
         time.sleep(15 * 60)
