@@ -36,7 +36,8 @@ def count(status):
     sys.stdout.flush()
 
 def check():
-    for status in twitter.home_timeline(count=200):
+    since_id = max(seen)
+    for status in twitter.home_timeline(count=200, since_id=since_id):
         count(status)
 
 print("")
