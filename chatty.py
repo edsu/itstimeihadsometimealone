@@ -7,18 +7,11 @@ Looks at your home timeline and tells you who tweets the most on it
 import csv
 import sys
 import time
-import dotenv
-import tweepy
 import datetime
 
 from os import environ as e
 from collections import Counter
-
-dotenv.load_dotenv()
-
-auth = tweepy.OAuthHandler(e["CONSUMER_KEY"], e["CONSUMER_SECRET"])
-auth.set_access_token(e["ACCESS_TOKEN"], e["ACCESS_TOKEN_SECRET"])
-twitter = tweepy.API(auth)
+from utils import twitter
 
 tweets = Counter()
 users = Counter()
@@ -56,6 +49,9 @@ while True:
     except tweepy.error.RateLimitError as e:
         print("sleeping", e)
         time.sleep(15 * 60)
+    except tweepy.error.TweepError as e:
+        print("caught Twitter API error sleeping")
+        time.sleep(60)
     except KeyboardInterrupt:
         break
 
