@@ -1,3 +1,4 @@
+tqdm
 tweepy
 termcolor
 python-dotenv
