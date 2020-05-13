@@ -9,9 +9,8 @@ import sys
 import time
 import datetime
 
-from os import environ as e
-from collections import Counter
 from utils import twitter
+from collections import Counter
 
 tweets = Counter()
 users = Counter()
