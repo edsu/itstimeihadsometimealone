@@ -116,9 +116,10 @@ if users_path.is_file():
     print("\n")
     use_cached = prompt_boolean("I found an old copy of user information at {} shall I use it?".format(users_path))
 if not use_cached:
-    print("\n")
-    print(bold("Ok, I'm going to fetch the information for {} users from Twitter..."))
     users = get_users(user_ids)
+    print("\n")
+    print(bold("Ok, I'm going to fetch the information for {} users from Twitter...".format(len(users))))
+
 else:
     users = json.load(users_path.open())
 save_json(users, archive / "extras" / "users.json")
